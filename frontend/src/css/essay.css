@@ -1,0 +1,364 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 10px;
+}
+/* Create three equal columns that floats next to each other */
+.essay-left {
+  float: left;
+  width: 20%;
+  padding: 15px;
+  height: auto;
+  content: "";
+  display: table;
+  clear: both;
+}
+.essay-right {
+  float: left;
+  width: 80%;
+  padding: 15px;
+}
+
+.strong-essay {
+  float: left;
+  width: 49%;
+  padding: 15px;
+  content: "";
+  margin-right: 1%;
+  display: table;
+  clear: both;
+}
+.weak-essay {
+  float: left;
+  width: 49%;
+  padding: 15px;
+  margin-left: 1%;
+  height: auto;
+}
+
+/* Clear floats after the columns */
+.row::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+/* CSS for the container div */
+.container {
+  width: 100%; /* Set the width of the container to 100% */
+  max-width: 400px; /* Set a maximum width if needed */
+  position: fixed; /* Positioning context for the circle */
+}
+
+/* CSS for the circle div */
+.circle {
+  width: 90%; /* Set the width of the circle as a percentage */
+  padding-top: 90%; /* Maintain a 1:1 aspect ratio (height equal to width) */
+  margin-left: 10%;
+  background-color: #ff5055; /* Background color of the circle */
+  border-radius: 50%; /* Create a circular shape */
+  position: absolute; /* Position the circle inside the container */
+  top: 50%; /* Center the circle vertically */
+  left: 1%; /* Center the circle horizontally */
+  transform: translate(-50%, -50%); /* Center the circle precisely */
+}
+
+/* Additional styles for the circle (you can customize as needed) */
+.circle::before {
+  content: ''; /* Empty content to maintain aspect ratio */
+  display: block; /* Make it a block-level element */
+}
+
+/* Example styles for text inside the circle */
+.circle p {
+  position: absolute;
+  margin-top: -45%;
+  margin-left: 40%;
+  color: #000000;
+  font-weight: bold;
+  font-size: 23px;
+  text-align: start;
+  /* Add any other text styles you want */
+}
+.top-header {
+  border: 4px solid #000000;
+  border-radius: 10px;
+  background-color: #fff6e5;
+}
+.top-header p {
+  color: #000000;
+  font-weight: bold;
+}
+.bottom-footer p {
+  color: #000000;
+  font-weight: bold;
+}
+
+.flex-container {
+  display: flex;
+  width: 400px;
+  border: 4px solid darkgray;
+  border-radius: 10px;
+  margin: auto;
+}
+.flex-container > div {
+  color: white;
+  width: 30px;
+  margin: 5px;
+  height: 40px;
+  transform: skew(-8deg);
+}
+
+.essay-content {
+  padding: 20px;
+}
+.essay-content > span {
+  justify-content: flex-start;
+  align-content: center;
+  font-family: "Arial Black";
+  font-size: 18px;
+}
+
+.bottom-footer {
+  margin-top: 5%;
+  border: none;
+  border-radius: 30px;
+  padding: 10px;
+  background-color: #ff5055;
+}
+
+
+.left-topics {
+  height: auto;
+  background-color: #fff6e5;
+  padding: 0;
+  border: 3px solid #333231;
+  border-radius: 10px;
+}
+
+
+.left-topics-header {
+  width: 100%;
+  height: 3px;
+  margin-top: 20px;
+  background-color: #333231;
+}
+.dot-series {
+  width: auto;
+  display: inline-flex;
+  margin-left: 5px;
+  margin-top: 5px;
+  float: left;
+}
+
+.left-topics-header-filled-dot {
+  width: 10px;
+  height: 10px;
+  background-color: black;
+  border-radius: 50%;
+}
+
+.left-topics-header-dot {
+  width: 10px;
+  height: 10px;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+
+.left-topics-item {
+  width: 100%;
+  content: "";
+  display: table;
+  clear: both;
+}
+.inner-topic {
+  width: 50%;
+  height: auto;
+  overflow-y: auto;
+  float: left;
+}
+.inner-topic-generate {
+  background-color: #ff5055;
+  width: 100%;
+  float: left;
+  cursor: pointer;
+}
+
+.inner-topic:hover p {
+  background-color: #ff5055;
+  color: white;
+  cursor: pointer;
+}
+.inner-topic > p {
+  font-weight: bold;
+  margin: 10px 5px;
+  background-color: #61dafb;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.essay-container {
+  width: 50%;
+  height: auto;
+}
+.essay-dialog {
+  height: auto;
+  padding: 0;
+  margin-top: 5vh;
+  border: 3px solid #ff5055;
+  border-radius: 10px;
+}
+.essay-dialog-divider {
+  width: 100%;
+  height: 3px;
+  margin-top: 0;
+  background-color: #ff5055;
+}
+
+.three-icons-bar {
+  display: inline-flex;
+  width: 100%;
+  height: 40px;
+}
+
+.common-icon {
+  width: 30px;
+  height: 30px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border: 3px solid #ff5055;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+.hidden-divider {
+  width: 80%;
+  height: 2px;
+  margin-left: 10%;
+  margin-top: 14px;
+  background-color: #ff5055;
+}
+.zooming-divider {
+  width: 100%;
+  height: 2px;
+  margin-top: 5px;
+  background-color: #ff5055;
+}
+
+
+.relative {
+  position:relative;
+  border-radius:4px;
+}
+.close-mark:before,.close-mark:after{
+  content:'';
+  position:absolute;
+  width:25px;
+  height:2px;
+  background-color:#ff5055;
+  border-radius:2px;
+  top: 11px;
+}
+
+.close-mark:before{
+    -webkit-transform:rotate(45deg);
+    -moz-transform:rotate(45deg);
+    transform:rotate(45deg);
+    left: 0;
+}
+.close-mark:after{
+    -webkit-transform:rotate(-45deg);
+    -moz-transform:rotate(-45deg);
+    transform:rotate(-45deg);
+    right: 0;
+}
+
+.platte {
+  margin: 20px;
+}
+
+
+.platte-tomato {
+  background-color: tomato;
+}
+.platte-orange {
+  background-color: orange;
+}
+.platte-orange {
+  background-color: dodgerblue;
+}
+.platte-lightgreen {
+  background-color: lightgreen;
+}
+.platte-mediumseagreen {
+  background-color: mediumseagreen;
+}
+.platte-violet {
+  background-color: violet;
+}
+.platte-lightblue {
+  background-color: lightseagreen;
+}
+
+.platte-item:hover {
+  opacity: 70%;
+  cursor: pointer;
+}
+
+
+/* CSS for the quadrilateral div */
+.quadrilateral {
+  width: 200px; /* Set the width of the quadrilateral */
+  height: 100px; /* Set the height of the quadrilateral */
+  background-color: #3498db; /* Set the background color to the desired color */
+  position: relative; /* Make it a positioned element */
+}
+
+/* Pseudo-elements to create the additional sides */
+.quadrilateral::before,
+.quadrilateral::after {
+  content: ''; /* Empty content */
+  position: absolute; /* Position these elements absolutely within the quadrilateral */
+  width: 0; /* Set width to 0 */
+  border: 50px solid transparent; /* Set border to create the angled sides */
+}
+
+/* Adjust the positioning of the pseudo-elements to create the desired angles */
+.quadrilateral::before {
+  top: 0;
+  left: 0;
+  border-right-color: #3498db; /* Match the border color to the quadrilateral's background */
+}
+
+.quadrilateral::after {
+  top: 0;
+  right: 0;
+  border-left-color: #3498db; /* Match the border color to the quadrilateral's background */
+}
+
+
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width:700px) {
+  .essay-left, .essay-right, .strong-essay, .weak-essay {
+    width: 100%;
+    margin: auto;
+    margin-top: 20px;
+  }
+}
+
+@media screen and (max-width:1200px) {
+  .inner-topic, .essay-left, .essay-right {
+    width: 100%;
+  }
+  .inner-topic {
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+  .left-topics {
+
+  }
+}
