@@ -1,1 +1,0 @@
-MONGO_DETAILS = "localhost:27017"
