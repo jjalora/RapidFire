@@ -1,0 +1,12 @@
+"""
+Please write two 250-650 word essays. The first should be an example of a strong personal statement with 
+{strong_attribute} for a college application, labeled "Strong Essay", and the second should be a weak personal 
+statement with {weak_attribute} for a college application, labeled "Weak Essay".
+
+Please use the following information to inform both essays:
+
+A student that is a {identity} and {wildcard}
+
+and use the following prompt:
+- {common_essay_prompt}
+"""
