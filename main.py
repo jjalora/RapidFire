@@ -3,7 +3,7 @@ from langchain import PromptTemplate
 from utils import load_data, get_src_dir, load_api_key_from_file, save_string_to_file, load_LLM, load_file_to_list
 import random
 
-from os.path import join
+from os.path import join, exists
 
 PATH = get_src_dir()
 pathToPrompts = join(PATH, "prompts")
@@ -14,10 +14,15 @@ module_one_prompt = PromptTemplate(
     template=module_one_template,
 )
 
-API_KEY = load_api_key_from_file(join(PATH, "config.txt"))
-if not API_KEY:
-    st.error("Failed to load API key from config file.")
-    raise SystemExit
+# Load API key either from local machine or from streamlit secrets
+key_path = join(PATH, "config.txt")
+if exists(key_path):
+    API_KEY = load_api_key_from_file(key_path)
+    if not API_KEY:
+        st.error("Failed to load API key from config file.")
+        raise SystemExit
+else:
+    API_KEY = st.secrets["openai_secret_key"]
 
 # Load LLM
 llm = load_LLM(API_KEY)
