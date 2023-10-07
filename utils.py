@@ -1,6 +1,7 @@
 import os
 import inspect
 from langchain.llms.openai import OpenAIChat
+import yaml
 
 def load_data(filename):
     with open(filename, 'r') as file:
@@ -59,3 +60,16 @@ def load_file_to_list(filename):
     with open(filename, 'r') as file:
         # Read lines and strip trailing and leading whitespace from each line
         return [line.strip() for line in file]
+
+def load_yaml_settings(filename):
+    """
+    Load a YAML file and return the contents as a dictionary.
+    
+    Parameters:
+    - filename (str): Path to the YAML file.
+    
+    Returns:
+    - dict: Dictionary containing the contents of the YAML file.
+    """
+    with open(filename, 'r') as file:
+        return yaml.load(file, Loader=yaml.FullLoader)
