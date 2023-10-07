@@ -1,5 +1,6 @@
 import os
 import inspect
+from langchain.llms.openai import OpenAIChat
 
 def load_data(filename):
     with open(filename, 'r') as file:
@@ -38,3 +39,23 @@ def save_string_to_file(content, filename):
     """
     with open(filename, 'w') as file:
         file.write(content)
+
+def load_LLM(openai_api_key):
+    """Logic for loading the chain you want to use should go here."""
+    # Make sure your openai_api_key is set as an environment variable
+    llm = OpenAIChat(temperature=.2, openai_api_key=openai_api_key, model="gpt-4")
+    return llm
+
+def load_file_to_list(filename):
+    """
+    Load contents of a text file into a list, where each line in the file becomes an item in the list.
+    
+    Parameters:
+    - filename (str): Path to the text file.
+    
+    Returns:
+    - list: List containing each line from the file as an item.
+    """
+    with open(filename, 'r') as file:
+        # Read lines and strip trailing and leading whitespace from each line
+        return [line.strip() for line in file]
