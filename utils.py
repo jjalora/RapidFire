@@ -4,6 +4,7 @@ from langchain.llms.openai import OpenAIChat
 import yaml
 from fpdf import FPDF
 import io
+import yagmail
 
 def load_data(filename):
     with open(filename, 'r') as file:
@@ -22,12 +23,17 @@ def get_src_dir():
     return os.path.dirname(os.path.abspath(path))
 
 def load_api_key_from_file(filename):
+    config_data = {}
+    
     with open(filename, 'r') as file:
         for line in file:
             key, value = line.strip().split('=')
             if key == "API_KEY":
-                return value
-    return None
+                config_data['API_KEY'] = value
+            elif key == "EMAIL_PASSWORD":
+                config_data['EMAIL_PASSWORD'] = value
+
+    return config_data
 
 def save_string_to_file(content, filename):
     """
@@ -90,3 +96,23 @@ def create_pdf(text):
     pdf.output(pdf_buffer, "F")
     pdf_buffer.seek(0)
     return pdf_buffer
+
+import yagmail
+import tempfile
+
+def send_email_with_pdf(student_name, sender_email, recipient_email, subject, content, pdf_buffer, email_password):
+    temp_filename = f"{student_name}_counseling_report.pdf"
+    with open(temp_filename, "wb") as f:
+        f.write(pdf_buffer.getvalue())
+
+    # Create yagmail client using the sender email and the provided email password
+    yag = yagmail.SMTP(sender_email, email_password)
+    yag.send(
+        to=recipient_email,
+        subject=subject,
+        contents=content,
+        attachments=[temp_filename]  # Pass the temp file path as the attachment
+    )
+    
+    # Optionally delete the temp file if you don't want to keep it
+    # os.remove(temp_filename)

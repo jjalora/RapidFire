@@ -1,9 +1,10 @@
 import streamlit as st
 from langchain import PromptTemplate
 from utils import load_data, get_src_dir, load_api_key_from_file, load_LLM, \
-    load_file_to_list, load_yaml_settings, create_pdf
+    load_file_to_list, load_yaml_settings, create_pdf, send_email_with_pdf
 import random
 import base64
+import yagmail
 
 from os.path import join, exists
 
@@ -22,12 +23,18 @@ module_one_prompt = PromptTemplate(
 # Load API key either from local machine or from streamlit secrets
 key_path = join(PATH, "config.txt")
 if exists(key_path):
-    API_KEY = load_api_key_from_file(key_path)
+    config = load_api_key_from_file(key_path)
+    API_KEY = config.get('API_KEY')
+    EMAIL_PASSWORD = config.get('EMAIL_PASSWORD')
     if not API_KEY:
         st.error("Failed to load API key from config file.")
         raise SystemExit
 else:
     API_KEY = st.secrets["openai_secret_key"]
+    EMAIL_PASSWORD = st.secrets["email_password"]
+
+# Register email account
+# yagmail.register(SETTINGS['sender_email'], EMAIL_PASSWORD)
 
 # Load LLM
 llm = load_LLM(API_KEY)
@@ -114,13 +121,14 @@ if page == "Module 1: Mad Libs":
         with col2:
             st.session_state.school = st.text_input("School*")  # Moved to the right column
             st.session_state.counselor_name = st.text_input("Counselor’s Name*")
-            st.session_state.counselor_email = st.text_input("Counselor Email*")
+            st.session_state.counselor_email = st.text_input("Counselor's Email*")
+            st.session_state.counselor_calendly = st.text_input("Counselor's Calendly Username*")
             st.session_state.top_schools = st.text_area("Top three schools you are applying to (comma separated)")
 
         # Check if all required fields are filled
         if st.session_state.first_name and st.session_state.last_name and st.session_state.email and \
            st.session_state.school and st.session_state.grade and st.session_state.counselor_name and \
-           st.session_state.counselor_email and st.session_state.zip_code:
+           st.session_state.counselor_email and st.session_state.zip_code and st.session_state.counselor_calendly:
                
             # To pseudo-center the Start button
             start_col1, start_btn_col, start_col2 = st.columns([1, 2, 1])
@@ -251,6 +259,9 @@ elif page == "Module 2: Brainstorm":
         st.session_state.messages.append({"role": "assistant", "content": response})  # Only add the LLM's response
         st.session_state.context += "\n\n" + response
 
+    if "generate_report" not in st.session_state:
+        st.session_state.generate_report = False
+
     # Display the previous messages
     topic_identified = False
     for message in st.session_state.messages:
@@ -281,12 +292,22 @@ elif page == "Module 2: Brainstorm":
             st.write("Please proceed to Module 3 in the sidebar for your counselor report.")
             st.session_state.generate_report = True
             page = "Module 3: Statement Starter Report" # Redirect to Module 3
+            st.experimental_rerun()
+
 elif page == "Module 3: Statement Starter Report":
     st.header("Module 3: Statement Starter Report")
     
     # Load and append the initial prompts from module_three.txt
     if "context" not in st.session_state:
         st.session_state.context = ""
+    
+    if "show_email_sent_notification" not in st.session_state:
+        st.session_state.show_email_sent_notification = True
+    
+    # Embed the Calendly link
+    calendly_link = f"https://calendly.com/{st.session_state.counselor_calendly}"
+    calendly_iframe = f'<iframe src="{calendly_link}" width="100%" height="600" frameborder="0"></iframe>'
+    st.markdown(calendly_iframe, unsafe_allow_html=True)
     
     # Add user info from Module 1
     user_info = f"""
@@ -308,11 +329,40 @@ elif page == "Module 3: Statement Starter Report":
     pdf_buffer = create_pdf(response)
 
     # Encode the BytesIO stream to base64
-    b64 = base64.b64encode(pdf_buffer.getvalue()).decode()
-
+    # b64 = base64.b64encode(pdf_buffer.getvalue()).decode()
     # Embed the base64 encoded PDF in an HTML iframe
-    pdf_display = f"""
-    <iframe src="data:application/pdf;base64,{b64}" width="700" height="1000" type='application/pdf'>
-    </iframe>
-    """
-    st.markdown(pdf_display, unsafe_allow_html=True)
+    # pdf_display = f"""
+    # <iframe src="data:application/pdf;base64,{b64}" width="700" height="1000" type='application/pdf'>
+    # </iframe>
+    # """
+    # st.markdown(pdf_display, unsafe_allow_html=True)
+
+    # href = f'<a href="data:application/pdf;base64,{b64}" download="report.pdf">Download Statement Starter Report</a>'
+    # st.markdown(href, unsafe_allow_html=True)
+
+    # At the beginning of the module
+    email_notification_placeholder = st.empty()
+    col1, col2, col3 = st.columns([1,2,1])  # Create columns: 1:1:2:1:1 ratio
+    with col2:  # Using the center column to place the button/notification
+        if st.session_state.show_email_sent_notification:
+            if st.button(f"Send Statement Starter Report to {st.session_state.counselor_email}"):
+                subject = f"Statement Starter Report for {st.session_state.first_name} {st.session_state.last_name}"
+                content = f"""
+                            Hello {st.session_state.counselor_name},
+
+                            Please find the Statement Starter Report for {st.session_state.first_name} {st.session_state.last_name} attached to this email.
+
+                            Best,
+                            Statement Starter Team
+                            """
+                try:
+                    send_email_with_pdf(f"{st.session_state.first_name} {st.session_state.last_name}", SETTINGS['sender_email'], 
+                                        st.session_state.counselor_email, subject, content, pdf_buffer, EMAIL_PASSWORD)
+                    st.session_state.show_email_sent_notification = False  # Set the flag to hide the button and show the notification
+                    st.experimental_rerun()
+                except Exception as e:
+                    st.error(f"An error occurred while sending the email: {str(e)}")
+
+        # Show the notification if the email was sent successfully
+        if not st.session_state.show_email_sent_notification:
+            st.write("Email sent successfully!")
