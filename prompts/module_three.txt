@@ -1,1 +1,17 @@
-Please write a brief analysis and summary of this conversation to serve as briefing material for a school counselor preparing for a meeting with this student to discuss their personal statement. Please include a possible outline the student might use to write their essay as well as a couple suggested questions the counselor might ask to inspire the student in their writing.
+Please write a brief analysis and summary of this conversation to serve as briefing material for a school counselor preparing for a meeting with this student to discuss their personal statement. 
+
+Please include a possible outline the student might use to write their essay as well as a couple suggested questions the counselor might ask to inspire the student in their writing.
+
+Make sure to add appropriate whitespace so that it looks like a professional report that can be displayed nicely into a pdf.
+
+At the top of the pdf report, please include the following information in the following format:
+- Student Full Name: (first name and last name)
+- Student Email:
+- Student Zip Code:
+- School: 
+- Grade:
+- Counselor's Name:
+- Counselor's Email:
+- Top Three Schools:
+
+Make sure that the information is presented at the top of the report in a way that minimizes the use of vertical space.

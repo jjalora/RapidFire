@@ -2,6 +2,8 @@ import os
 import inspect
 from langchain.llms.openai import OpenAIChat
 import yaml
+from fpdf import FPDF
+import io
 
 def load_data(filename):
     with open(filename, 'r') as file:
@@ -73,3 +75,18 @@ def load_yaml_settings(filename):
     """
     with open(filename, 'r') as file:
         return yaml.load(file, Loader=yaml.FullLoader)
+
+def create_pdf(text):
+    """
+    Create a PDF document from a given string.
+    """
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, txt=text)
+
+    # Save to a BytesIO object and return that
+    pdf_buffer = io.BytesIO()
+    pdf.output(pdf_buffer, "F")
+    pdf_buffer.seek(0)
+    return pdf_buffer

@@ -1,4 +1,4 @@
-Please write two 250-450 word essays. The first should be an example of a strong personal statement with 
+Please write two 250-650 word essays. The first should be an example of a strong personal statement with 
 {strong_attribute} for a college application, labeled "Strong Essay", and the second should be a weak personal 
 statement with {weak_attribute} for a college application, labeled "Weak Essay".
 

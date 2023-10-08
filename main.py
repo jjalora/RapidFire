@@ -1,8 +1,9 @@
 import streamlit as st
 from langchain import PromptTemplate
 from utils import load_data, get_src_dir, load_api_key_from_file, load_LLM, \
-    load_file_to_list, load_yaml_settings
+    load_file_to_list, load_yaml_settings, create_pdf
 import random
+import base64
 
 from os.path import join, exists
 
@@ -64,8 +65,13 @@ if "module_completed" not in st.session_state:
 # Define the possible pages, start with only "Module 1: Mad Libs"
 possible_pages = ["Module 1: Mad Libs"]
 
-if st.session_state.module_completed:
+# Modify the navigation menu
+if st.session_state.module_completed: 
     possible_pages.append("Module 2: Brainstorm")
+    
+# Check if the Statement Starter Report is needed
+if "generate_report" in st.session_state and st.session_state.generate_report:
+    possible_pages.append("Module 3: Statement Starter Report")
 
 # Main navigation menu
 page = st.sidebar.selectbox(
@@ -246,9 +252,12 @@ elif page == "Module 2: Brainstorm":
         st.session_state.context += "\n\n" + response
 
     # Display the previous messages
+    topic_identified = False
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
+        if "[TOPIC IDENTIFIED]" in message["content"]:
+            topic_identified = True
 
     # Get user's input
     prompt = st.chat_input("You: ")
@@ -264,3 +273,46 @@ elif page == "Module 2: Brainstorm":
 
         # Force rerun to update the chat immediately
         st.experimental_rerun()
+
+    # Check if topic was identified and display button
+    if topic_identified:
+        if st.button("Generate Report for Counselor"):
+            # TODO: Place holder code. Your logic when the button is clicked
+            st.write("Please proceed to Module 3 in the sidebar for your counselor report.")
+            st.session_state.generate_report = True
+            page = "Module 3: Statement Starter Report" # Redirect to Module 3
+elif page == "Module 3: Statement Starter Report":
+    st.header("Module 3: Statement Starter Report")
+    
+    # Load and append the initial prompts from module_three.txt
+    if "context" not in st.session_state:
+        st.session_state.context = ""
+    
+    # Add user info from Module 1
+    user_info = f"""
+                First Name: {st.session_state.first_name}
+                Last Name: {st.session_state.last_name}
+                Email: {st.session_state.email}
+                School: {st.session_state.school}
+                Grade: {st.session_state.grade}
+                Counselor's Name: {st.session_state.counselor_name}
+                Counselor Email: {st.session_state.counselor_email}
+                Top Schools: {st.session_state.top_schools}
+                Zip Code: {st.session_state.zip_code}
+                """
+    initial_prompt = load_data(join(pathToPrompts, "module_three.txt"))
+    st.session_state.context += "\n\n" + user_info + "\n\n" + initial_prompt
+    response = llm(st.session_state.context)
+
+    # Generate PDF from the context
+    pdf_buffer = create_pdf(response)
+
+    # Encode the BytesIO stream to base64
+    b64 = base64.b64encode(pdf_buffer.getvalue()).decode()
+
+    # Embed the base64 encoded PDF in an HTML iframe
+    pdf_display = f"""
+    <iframe src="data:application/pdf;base64,{b64}" width="700" height="1000" type='application/pdf'>
+    </iframe>
+    """
+    st.markdown(pdf_display, unsafe_allow_html=True)
