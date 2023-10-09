@@ -75,16 +75,25 @@ possible_pages = ["Module 1: Mad Libs"]
 # Modify the navigation menu
 if st.session_state.module_completed: 
     possible_pages.append("Module 2: Brainstorm")
-    
+
 # Check if the Statement Starter Report is needed
 if "generate_report" in st.session_state and st.session_state.generate_report:
     possible_pages.append("Module 3: Statement Starter Report")
 
-# Main navigation menu
-page = st.sidebar.selectbox(
+# Main navigation menu using a session state to remember the last page
+selected_page = st.sidebar.selectbox(
     "Choose a page",
-    possible_pages
+    possible_pages,
+    index=st.session_state.get("current_page_idx", 0)
 )
+
+if selected_page != st.session_state.get("last_page", None):
+    page = selected_page
+    st.session_state.current_page_idx = possible_pages.index(page)  # Update session state with current page index
+    st.session_state.last_page = selected_page
+    st.experimental_rerun()
+else:
+    page = st.session_state.get("last_page", "Module 1: Mad Libs")
 
 if page == "Module 1: Mad Libs":
     # Initial state variable to check if user has started after filling required fields
@@ -145,7 +154,7 @@ if page == "Module 1: Mad Libs":
             st.write(f"You've successfully rated {SETTINGS['num_rounds']} essays. Please proceed to Module 2 in the sidebar.")
         else:
             st.info(f"""
-                    This module provides examples of both strong and weak essays written by a fictional student. 
+                    Module 1: This module provides examples of both strong and weak essays written by a fictional student. 
                     To advance to the next module, you must review and rate the stronger essay in {SETTINGS['num_rounds']} separate comparisons. 
                     Please note that generating the essays may take some time. Be patient.
                     """)
@@ -244,7 +253,11 @@ if page == "Module 1: Mad Libs":
                     st.write(f"You rated the last essay {st.session_state.ratings[-1]} out of 5.")
 
 elif page == "Module 2: Brainstorm":
-    st.header("Module 2: Brainstorm")
+    st.info(f"""
+            Module 2: Now it’s time to brainstorm your essay topic. Be open and try some different paths. 
+            We’ll send a brief summary of your ideas to your counselor so you can get right to 
+            workshopping your essay during your in person meeting. 
+            """)
 
     if "context" not in st.session_state:
         st.session_state.context = ""
@@ -255,9 +268,13 @@ elif page == "Module 2: Brainstorm":
         # Load initial prompts from module_two.txt and start the conversation
         initial_prompt = load_data(join(pathToPrompts, "module_two.txt"))
         st.session_state.context += "\n\n" + initial_prompt
+
+        # TODO: Debugging. Remove later.
+        # st.session_state.messages.append({"role": "assistant", "content": "[TOPIC IDENTIFIED]"})
+        
         response = llm(st.session_state.context)
-        st.session_state.messages.append({"role": "assistant", "content": response})  # Only add the LLM's response
-        st.session_state.context += "\n\n" + response
+        st.session_state.messages.append({"role": "assistant", "content": response}) # Only add the LLM's response
+        st.session_state.context += f"\n\n{response}"
 
     if "generate_report" not in st.session_state:
         st.session_state.generate_report = False
@@ -274,28 +291,64 @@ elif page == "Module 2: Brainstorm":
     prompt = st.chat_input("You: ")
     if prompt:
         st.session_state.messages.append({"role": "user", "content": prompt})
-        st.session_state.context += "\n\n" + prompt
+        st.session_state.context += f"\n\Student: {prompt}"
 
         # Obtain the LLM's response using the accumulated context and user's message
         response = llm(st.session_state.context)
 
         st.session_state.messages.append({"role": "assistant", "content": response})
-        st.session_state.context += "\n\n" + response
+        st.session_state.context += f"\n\n{response}"
 
         # Force rerun to update the chat immediately
         st.experimental_rerun()
 
     # Check if topic was identified and display button
     if topic_identified:
-        if st.button("Generate Report for Counselor"):
-            # TODO: Place holder code. Your logic when the button is clicked
-            st.write("Please proceed to Module 3 in the sidebar for your counselor report.")
-            st.session_state.generate_report = True
-            page = "Module 3: Statement Starter Report" # Redirect to Module 3
-            st.experimental_rerun()
+        # Add a state variable to check if the report has been generated
+        if 'report_generated' not in st.session_state:
+            st.session_state.report_generated = False
+        
+        # If report hasn't been generated, show the button
+        if not st.session_state.report_generated:
+            if st.button("Generate Report for Counselor"):
+                st.session_state.generate_report = True
+                st.session_state.report_generated = True  # Update the state to hide the button
+                
+                # Add user info from Module 1
+                user_info = f"""
+                            First Name: {st.session_state.first_name}
+                            Last Name: {st.session_state.last_name}
+                            Email: {st.session_state.email}
+                            School: {st.session_state.school}
+                            Grade: {st.session_state.grade}
+                            Counselor's Name: {st.session_state.counselor_name}
+                            Counselor Email: {st.session_state.counselor_email}
+                            Top Schools: {st.session_state.top_schools}
+                            Zip Code: {st.session_state.zip_code}
+                            """
+                initial_prompt = load_data(join(pathToPrompts, "module_three.txt"))
+                st.session_state.context += "\n\n" + user_info + "\n\n" + initial_prompt
+                response = llm(st.session_state.context)
+
+                # Generate PDF from the context
+                pdf_buffer = create_pdf(response)
+                st.session_state.pdf_buffer = pdf_buffer
+                
+                st.experimental_rerun()
+        
+        # If report has been generated, prompt the user to proceed to Module 3
+        else:
+            st.info("""
+                     Report has been generated! Please proceed to Module 3 in the 
+                     sidebar to schedule an appointment with your counselor and send them the report.
+                     """)
 
 elif page == "Module 3: Statement Starter Report":
-    st.header("Module 3: Statement Starter Report")
+    st.info(f"""
+            Module 3: Nice work on finding a topic! Please schedule a time with your 
+            counselor and click the button below to send them a summary of what 
+            you might want to write about in your college essay.
+            """)
     
     # Load and append the initial prompts from module_three.txt
     if "context" not in st.session_state:
@@ -306,27 +359,8 @@ elif page == "Module 3: Statement Starter Report":
     
     # Embed the Calendly link
     calendly_link = f"https://calendly.com/{st.session_state.counselor_calendly}"
-    calendly_iframe = f'<iframe src="{calendly_link}" width="100%" height="600" frameborder="0"></iframe>'
+    calendly_iframe = f'<iframe src="{calendly_link}" width="100%" height="450" frameborder="0"></iframe>'
     st.markdown(calendly_iframe, unsafe_allow_html=True)
-    
-    # Add user info from Module 1
-    user_info = f"""
-                First Name: {st.session_state.first_name}
-                Last Name: {st.session_state.last_name}
-                Email: {st.session_state.email}
-                School: {st.session_state.school}
-                Grade: {st.session_state.grade}
-                Counselor's Name: {st.session_state.counselor_name}
-                Counselor Email: {st.session_state.counselor_email}
-                Top Schools: {st.session_state.top_schools}
-                Zip Code: {st.session_state.zip_code}
-                """
-    initial_prompt = load_data(join(pathToPrompts, "module_three.txt"))
-    st.session_state.context += "\n\n" + user_info + "\n\n" + initial_prompt
-    response = llm(st.session_state.context)
-
-    # Generate PDF from the context
-    pdf_buffer = create_pdf(response)
 
     # Encode the BytesIO stream to base64
     # b64 = base64.b64encode(pdf_buffer.getvalue()).decode()
@@ -357,7 +391,7 @@ elif page == "Module 3: Statement Starter Report":
                             """
                 try:
                     send_email_with_pdf(f"{st.session_state.first_name} {st.session_state.last_name}", SETTINGS['sender_email'], 
-                                        st.session_state.counselor_email, subject, content, pdf_buffer, EMAIL_PASSWORD)
+                                        st.session_state.counselor_email, subject, content, st.session_state.pdf_buffer, EMAIL_PASSWORD)
                     st.session_state.show_email_sent_notification = False  # Set the flag to hide the button and show the notification
                     st.experimental_rerun()
                 except Exception as e:
@@ -365,4 +399,7 @@ elif page == "Module 3: Statement Starter Report":
 
         # Show the notification if the email was sent successfully
         if not st.session_state.show_email_sent_notification:
-            st.write("Email sent successfully!")
+            st.info("""
+                    Congratulations! Your report has been sent to your counselor's email. 
+                    Don't forget to schedule an appointment with them using Calendly above.)
+                    """)
