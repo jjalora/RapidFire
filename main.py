@@ -401,5 +401,5 @@ elif page == "Module 3: Statement Starter Report":
         if not st.session_state.show_email_sent_notification:
             st.info("""
                     Congratulations! Your report has been sent to your counselor's email. 
-                    Don't forget to schedule an appointment with them using Calendly above.)
+                    Don't forget to schedule an appointment with them using Calendly above.
                     """)
