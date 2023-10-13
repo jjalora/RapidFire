@@ -40,19 +40,19 @@ Statement Starter is a Streamlit application designed to assist students in craf
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/jjalora/RapidFire.git```
+   git clone https://github.com/jjalora/RapidFire.git
 
 2. Navigate to the project directory:
    ```bash
-   cd RapidFire```
+   cd RapidFire
 
 3. Install the required packages:
-  ```bash
-  pip install -r requirements.txt```
+   ```bash
+   pip install -r requirements.txt
 
-4. Run the Streamlit app:
-  ```bash
-  streamlit run main.py```
+5. Run the Streamlit app:
+   ```bash
+   streamlit run main.py
 
 ## Usage
 
