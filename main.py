@@ -217,11 +217,11 @@ if page == "Module 1: Mad Libs":
                 col_strong, col_weak = st.columns(2)
 
                 with col_strong:
-                    st.subheader("Strong Essay")
+                    st.subheader("Stronger Essay")
                     st.text_area("", value=st.session_state.strong_essay, height=400)
 
                 with col_weak:
-                    st.subheader("Weak Essay")
+                    st.subheader("Weaker Essay")
                     st.text_area("", value=st.session_state.weak_essay, height=400)
 
                 with col_strong:
