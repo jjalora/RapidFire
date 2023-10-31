@@ -53,18 +53,3 @@ Statement Starter is a Streamlit application designed to assist students in craf
 5. Run the Streamlit app:
    ```bash
    streamlit run main.py
-
-## Usage
-
-### Module 1: Mad Libs
-1. User Details: Enter your details and preferences.
-2. Essay Generation: Select attributes and generate essays.
-3. Rating: Rate the generated essays.
-
-### Module 2: Brainstorm
-1. Chat Interaction: Engage in a chat to brainstorm essay topics.
-2. Topic Identification: Identify and confirm the essay topic.
-
-### Module 3: Statement Starter Report
-1. Schedule Appointment: Use Calendly to schedule an appointment with your counselor.
-2. Send Report: Send the generated report to your counselor via email.
