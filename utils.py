@@ -49,10 +49,10 @@ def save_string_to_file(content, filename):
     with open(filename, 'w') as file:
         file.write(content)
 
-def load_LLM(openai_api_key):
+def load_LLM(key):
     """Logic for loading the chain you want to use should go here."""
     # Make sure your openai_api_key is set as an environment variable
-    llm = OpenAIChat(temperature=.2, openai_api_key=openai_api_key, model="gpt-4")
+    llm = OpenAIChat(temperature=.2, openai_api_key=key, model="gpt-4")
     return llm
 
 def load_file_to_list(filename):

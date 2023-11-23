@@ -37,7 +37,6 @@ else:
 # yagmail.register(SETTINGS['sender_email'], EMAIL_PASSWORD)
 
 # Load LLM
-print("API Key is: ", API_KEY)
 llm = load_LLM(API_KEY)
 
 @st.cache_data(show_spinner=False)  # Disable the spinner for a cleaner UI
