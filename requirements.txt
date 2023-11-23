@@ -1,5 +1,5 @@
-langchain
-streamlit
-openai
-fpdf2
-yagmail
+langchain<=0.0.309
+streamlit<=1.27.2
+openai<=0.28.1
+fpdf2<=2.7.5
+yagmail<=0.15.293
