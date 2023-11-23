@@ -30,7 +30,8 @@ if exists(key_path):
         st.error("Failed to load API key from config file.")
         raise SystemExit
 else:
-    API_KEY = st.secrets["openai_secret_key"]
+    # API_KEY = st.secrets["openai_secret_key"]
+    API_KEY = "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"
     EMAIL_PASSWORD = st.secrets["email_password"]
 
 # Register email account
